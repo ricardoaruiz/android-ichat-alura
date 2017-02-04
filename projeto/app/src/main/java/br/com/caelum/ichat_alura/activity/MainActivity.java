@@ -13,8 +13,13 @@ import java.util.List;
 
 import br.com.caelum.ichat_alura.R;
 import br.com.caelum.ichat_alura.adapter.MensagemAdapter;
+import br.com.caelum.ichat_alura.callback.EnviarMensagemCallback;
+import br.com.caelum.ichat_alura.callback.ReceberMensagemCallback;
 import br.com.caelum.ichat_alura.model.Mensagem;
 import br.com.caelum.ichat_alura.service.ChatService;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,8 +38,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        chatService = new ChatService(this);
-        chatService.receber();
+        Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl("http://192.168.6.17:8080/")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+        chatService = retrofit.create(ChatService.class);
+        receberMensagens();
 
         txtMensagem = (EditText) findViewById(R.id.txtMensagem);
 
@@ -42,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         btnEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                  chatService.enviar(new Mensagem(idCliente, txtMensagem.getText().toString()));
+                chatService.enviar(new Mensagem(idCliente, txtMensagem.getText().toString())).enqueue(new EnviarMensagemCallback());
             }
         });
 
@@ -65,7 +75,11 @@ public class MainActivity extends AppCompatActivity {
 
             carregaLista(mensagens);
         }
-        chatService.receber();
+        receberMensagens();
+    }
+
+    public void receberMensagens() {
+        chatService.receber().enqueue(new ReceberMensagemCallback(this));
     }
 
 

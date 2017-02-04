@@ -1,5 +1,7 @@
 package br.com.caelum.ichat_alura.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by ralmendro on 2/3/17.
  */
@@ -7,6 +9,7 @@ public class Mensagem {
 
     private Integer id;
 
+    @SerializedName("text")
     private String texto;
 
     public Mensagem(Integer id, String texto) {
