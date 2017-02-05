@@ -11,10 +11,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import br.com.caelum.ichat_alura.R;
 import br.com.caelum.ichat_alura.adapter.MensagemAdapter;
+import br.com.caelum.ichat_alura.app.ChatApplication;
 import br.com.caelum.ichat_alura.callback.EnviarMensagemCallback;
 import br.com.caelum.ichat_alura.callback.ReceberMensagemCallback;
+import br.com.caelum.ichat_alura.component.ChatComponent;
 import br.com.caelum.ichat_alura.model.Mensagem;
 import br.com.caelum.ichat_alura.service.ChatService;
 import retrofit2.Call;
@@ -31,19 +35,20 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Mensagem> mensagens;
 
-    private ChatService chatService;
+    @Inject
+    ChatService chatService;
+
+    ChatComponent chatComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("http://192.168.6.17:8080/")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
+        ChatApplication chatApplication = (ChatApplication) getApplication();
+        chatComponent = chatApplication.getChatComponent();
+        chatComponent.inject(this);
 
-        chatService = retrofit.create(ChatService.class);
         receberMensagens();
 
         txtMensagem = (EditText) findViewById(R.id.txtMensagem);
