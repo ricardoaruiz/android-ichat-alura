@@ -21,6 +21,9 @@ import br.com.caelum.ichat_alura.callback.ReceberMensagemCallback;
 import br.com.caelum.ichat_alura.component.ChatComponent;
 import br.com.caelum.ichat_alura.model.Mensagem;
 import br.com.caelum.ichat_alura.service.ChatService;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -29,9 +32,14 @@ public class MainActivity extends AppCompatActivity {
 
     private int idCliente =1;
 
-    private ListView listaMensagens;
-    private EditText txtMensagem;
-    private Button btnEnviar;
+    @BindView(R.id.lv_mensagem)
+    ListView listaMensagens;
+
+    @BindView(R.id.txtMensagem)
+    EditText txtMensagem;
+
+    @BindView(R.id.btnEnviar)
+    Button btnEnviar;
 
     private List<Mensagem> mensagens;
 
@@ -45,26 +53,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ButterKnife.bind(this);
+
         ChatApplication chatApplication = (ChatApplication) getApplication();
         chatComponent = chatApplication.getChatComponent();
         chatComponent.inject(this);
 
         receberMensagens();
 
-        txtMensagem = (EditText) findViewById(R.id.txtMensagem);
+    }
 
-        btnEnviar = (Button) findViewById(R.id.btnEnviar);
-        btnEnviar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chatService.enviar(new Mensagem(idCliente, txtMensagem.getText().toString())).enqueue(new EnviarMensagemCallback());
-            }
-        });
-
+    @OnClick(R.id.btnEnviar)
+    public void enviarMensagem() {
+        chatService.enviar(new Mensagem(idCliente, txtMensagem.getText().toString())).enqueue(new EnviarMensagemCallback());
     }
 
     private void carregaLista(List<Mensagem> mensagens) {
-        listaMensagens = (ListView) findViewById(R.id.lv_mensagem);
         listaMensagens.setAdapter(new MensagemAdapter(getBaseContext(), 1, mensagens));
     }
 
