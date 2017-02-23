@@ -5,7 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,10 +44,16 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.btnEnviar)
     Button btnEnviar;
 
+    @BindView(R.id.iv_avatar)
+    ImageView ivAvatar;
+
     private List<Mensagem> mensagens;
 
     @Inject
     ChatService chatService;
+
+    @Inject
+    Picasso picasso;
 
     ChatComponent chatComponent;
 
@@ -59,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
         chatComponent = chatApplication.getChatComponent();
         chatComponent.inject(this);
 
+        picasso.with(this).load("https://api.adorable.io/avatars/285/" + idCliente + ".png").into(ivAvatar);
+
         receberMensagens();
 
     }
@@ -69,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void carregaLista(List<Mensagem> mensagens) {
-        listaMensagens.setAdapter(new MensagemAdapter(getBaseContext(), 1, mensagens));
+        listaMensagens.setAdapter(new MensagemAdapter(this, 1, mensagens));
     }
 
     public void adicionaMensagemNaLista(Mensagem mensagem) {
@@ -90,7 +101,5 @@ public class MainActivity extends AppCompatActivity {
     public void receberMensagens() {
         chatService.receber().enqueue(new ReceberMensagemCallback(this));
     }
-
-
 
 }

@@ -41,6 +41,8 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.5.1'
     apt 'com.jakewharton:butterknife-compiler:8.5.1'
 
+    //Picasso
+    compile group: 'com.squareup.picasso', name: 'picasso', version: '2.5.2'
 
     testCompile 'junit:junit:4.12'
 }

@@ -1,6 +1,7 @@
 package br.com.caelum.ichat_alura.component;
 
 import br.com.caelum.ichat_alura.activity.MainActivity;
+import br.com.caelum.ichat_alura.adapter.MensagemAdapter;
 import br.com.caelum.ichat_alura.module.ChatModule;
 import dagger.Component;
 
@@ -12,5 +13,6 @@ import dagger.Component;
 public interface ChatComponent {
 
     void inject(MainActivity activity);
+    void inject(MensagemAdapter adapter);
 
 }
