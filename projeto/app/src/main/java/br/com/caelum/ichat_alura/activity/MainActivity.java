@@ -1,6 +1,11 @@
 package br.com.caelum.ichat_alura.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -57,6 +62,14 @@ public class MainActivity extends AppCompatActivity {
 
     ChatComponent chatComponent;
 
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Mensagem mensagem = (Mensagem) intent.getSerializableExtra("mensagem");
+            adicionaMensagemNaLista(mensagem);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
         picasso.with(this).load("https://api.adorable.io/avatars/285/" + idCliente + ".png").into(ivAvatar);
 
         receberMensagens();
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager.registerReceiver(receiver, new IntentFilter("nova_mensagem"));
 
     }
 
@@ -102,4 +118,10 @@ public class MainActivity extends AppCompatActivity {
         chatService.receber().enqueue(new ReceberMensagemCallback(this));
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager.unregisterReceiver(receiver);
+    }
 }

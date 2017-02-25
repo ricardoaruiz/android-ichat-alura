@@ -2,10 +2,14 @@ package br.com.caelum.ichat_alura.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by ralmendro on 2/3/17.
  */
-public class Mensagem {
+public class Mensagem implements Serializable{
+
+    private static final long serialVersionUID = -1122284054125218729L;
 
     private Integer id;
 
