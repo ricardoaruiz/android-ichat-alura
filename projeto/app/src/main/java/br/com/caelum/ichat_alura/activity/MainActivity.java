@@ -15,6 +15,9 @@ import android.widget.ListView;
 
 import com.squareup.picasso.Picasso;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +30,7 @@ import br.com.caelum.ichat_alura.app.ChatApplication;
 import br.com.caelum.ichat_alura.callback.EnviarMensagemCallback;
 import br.com.caelum.ichat_alura.callback.ReceberMensagemCallback;
 import br.com.caelum.ichat_alura.component.ChatComponent;
+import br.com.caelum.ichat_alura.event.MensagemEvent;
 import br.com.caelum.ichat_alura.model.Mensagem;
 import br.com.caelum.ichat_alura.service.ChatService;
 import butterknife.BindView;
@@ -62,14 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
     ChatComponent chatComponent;
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Mensagem mensagem = (Mensagem) intent.getSerializableExtra("mensagem");
-            adicionaMensagemNaLista(mensagem);
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,10 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
         picasso.with(this).load("https://api.adorable.io/avatars/285/" + idCliente + ".png").into(ivAvatar);
 
-        receberMensagens();
+        receberMensagens(null);
 
-        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.registerReceiver(receiver, new IntentFilter("nova_mensagem"));
+        EventBus.getDefault().register(this);
 
     }
 
@@ -99,29 +94,29 @@ public class MainActivity extends AppCompatActivity {
         listaMensagens.setAdapter(new MensagemAdapter(this, 1, mensagens));
     }
 
-    public void adicionaMensagemNaLista(Mensagem mensagem) {
-        if(mensagem != null) {
+    @Subscribe
+    public void adicionaMensagemNaLista(MensagemEvent mensagemEvent) {
+        if(mensagemEvent != null) {
             if(mensagens == null) {
                 mensagens = new ArrayList<>();
             }
             List<Mensagem> lista = new ArrayList<Mensagem>();
             lista.addAll(mensagens);
-            lista.add(mensagem);
+            lista.add(mensagemEvent.getMensagem());
             mensagens = lista;
 
             carregaLista(mensagens);
         }
-        receberMensagens();
     }
 
-    public void receberMensagens() {
-        chatService.receber().enqueue(new ReceberMensagemCallback(this));
+    @Subscribe
+    public void receberMensagens(MensagemEvent mensagemEvent) {
+        chatService.receber().enqueue(new ReceberMensagemCallback());
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.unregisterReceiver(receiver);
+        EventBus.getDefault().unregister(this);
     }
 }

@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 import br.com.caelum.ichat_alura.activity.MainActivity;
+import br.com.caelum.ichat_alura.event.MensagemEvent;
 import br.com.caelum.ichat_alura.model.Mensagem;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -16,22 +19,11 @@ import retrofit2.Response;
 
 public class ReceberMensagemCallback implements Callback<Mensagem> {
 
-    private Context context;
-
-    public ReceberMensagemCallback(Context context) {
-        this.context = context;
-    }
-
     @Override
     public void onResponse(Call<Mensagem> call, Response<Mensagem> response) {
         if(response.isSuccessful()) {
             Mensagem mensagem = response.body();
-
-            Intent intent = new Intent("nova_mensagem");
-            intent.putExtra("mensagem", mensagem);
-
-            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
-            localBroadcastManager.sendBroadcast(intent);
+            EventBus.getDefault().post(new MensagemEvent(mensagem));
         }
     }
 
