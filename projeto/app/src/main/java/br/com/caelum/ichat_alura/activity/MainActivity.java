@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     Picasso picasso;
 
+    @Inject
+    EventBus eventBus;
+
     ChatComponent chatComponent;
 
     @Override
@@ -81,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         receberMensagens(null);
 
-        EventBus.getDefault().register(this);
+        eventBus.register(this);
 
     }
 
@@ -111,12 +114,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void receberMensagens(MensagemEvent mensagemEvent) {
-        chatService.receber().enqueue(new ReceberMensagemCallback());
+        chatService.receber().enqueue(new ReceberMensagemCallback(eventBus));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        EventBus.getDefault().unregister(this);
+        eventBus.unregister(this);
     }
 }
