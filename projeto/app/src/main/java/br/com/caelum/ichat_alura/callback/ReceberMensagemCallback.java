@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import br.com.caelum.ichat_alura.activity.MainActivity;
 import br.com.caelum.ichat_alura.app.ChatApplication;
+import br.com.caelum.ichat_alura.event.FailureEvent;
 import br.com.caelum.ichat_alura.event.MensagemEvent;
 import br.com.caelum.ichat_alura.model.Mensagem;
 import retrofit2.Call;
@@ -38,7 +39,7 @@ public class ReceberMensagemCallback implements Callback<Mensagem> {
 
     @Override
     public void onFailure(Call<Mensagem> call, Throwable t) {
-
+        eventBus.post(new FailureEvent());
     }
 
 }

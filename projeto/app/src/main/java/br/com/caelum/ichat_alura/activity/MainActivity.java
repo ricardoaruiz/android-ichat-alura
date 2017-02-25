@@ -30,6 +30,7 @@ import br.com.caelum.ichat_alura.app.ChatApplication;
 import br.com.caelum.ichat_alura.callback.EnviarMensagemCallback;
 import br.com.caelum.ichat_alura.callback.ReceberMensagemCallback;
 import br.com.caelum.ichat_alura.component.ChatComponent;
+import br.com.caelum.ichat_alura.event.FailureEvent;
 import br.com.caelum.ichat_alura.event.MensagemEvent;
 import br.com.caelum.ichat_alura.model.Mensagem;
 import br.com.caelum.ichat_alura.service.ChatService;
@@ -121,5 +122,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         eventBus.unregister(this);
+    }
+
+    @Subscribe
+    public void lidarCom(FailureEvent event) {
+        receberMensagens(null);
     }
 }
