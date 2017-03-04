@@ -2,6 +2,7 @@ package br.com.caelum.ichat_alura.module;
 
 import android.app.Application;
 import android.content.Context;
+import android.view.inputmethod.InputMethodManager;
 
 import com.squareup.picasso.Picasso;
 
@@ -30,7 +31,7 @@ public class ChatModule {
     public ChatService getChatService() {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.7:8080/")
+                .baseUrl("http://192.168.1.2:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -46,6 +47,11 @@ public class ChatModule {
     @Provides
     public EventBus getEventBus() {
         return EventBus.builder().build();
+    }
+
+    @Provides
+    public InputMethodManager getInputMethodManager() {
+        return (InputMethodManager) app.getSystemService(Context.INPUT_METHOD_SERVICE);
     }
 
 }

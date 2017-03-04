@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -68,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     EventBus eventBus;
 
+    @Inject
+    InputMethodManager imm;
+
     ChatComponent chatComponent;
 
     @Override
@@ -87,11 +91,27 @@ public class MainActivity extends AppCompatActivity {
 
         eventBus.register(this);
 
+        if(savedInstanceState != null) {
+            mensagens = (List<Mensagem>) savedInstanceState.getSerializable("mensagens");
+        } else {
+            mensagens = new ArrayList<Mensagem>();
+        }
+
+        carregaLista(mensagens);
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("mensagens", (ArrayList<Mensagem>) mensagens);
     }
 
     @OnClick(R.id.btnEnviar)
     public void enviarMensagem() {
         chatService.enviar(new Mensagem(idCliente, txtMensagem.getText().toString())).enqueue(new EnviarMensagemCallback());
+        txtMensagem.getText().clear();
+        imm.hideSoftInputFromWindow(txtMensagem.getWindowToken(), 0);
     }
 
     private void carregaLista(List<Mensagem> mensagens) {
